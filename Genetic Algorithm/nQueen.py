@@ -25,7 +25,7 @@ Output:
 Returns a single solution of the N-Queen problem as a list representing a chess board. (Wraparound function)
 '''
 def nQueenCalculator(n, population, mutateProbability):
-    # Initialize population with random solutions
+    # Initialize population with random solutions h
     boards = []
     for i in range(population):
         boards.append(generateRandomBoard(n))
