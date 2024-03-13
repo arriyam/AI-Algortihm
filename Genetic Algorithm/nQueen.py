@@ -1,7 +1,7 @@
 import random
 import numpy as np
 
-def main():
+def main(): # test
     n = 10
     population = 12  # Population size has to be n >= 6. Upper bound is determined by how fast your laptop is.
     mutateProbability = 0.25
