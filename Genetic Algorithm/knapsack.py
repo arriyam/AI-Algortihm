@@ -11,52 +11,30 @@ Output: 0
 
 child = [0 0 0 1 0 0 0 0 0 0]
 
+List of things we need:
+
+1. genetic representation of a solution
+2. a function to generate new solutions
+3. fitness function
+4. selection function
+5. crossover function
+6. mutation function2
 '''
 
-# def createContents():
+#
+            
+
     
 
 def main():
-    n = 5
-    w = 10
+    n = 5 #total possible items
+    w = 10 #max weight
     names = ["pen", "laptop", "hen", "gold", "spoon"]
     profit = [10, 40, 30, 50, 35]
     weight = [5, 4, 6, 3, 2]
+
+    binArr = [0,0,1,0,1] #random example
     # answer would be items [ laptop, gold, spoon ]
-
-class Sack:
-    def __init__(contents):
-        self.contents = contents
-
-        self._weight = 0
-        self._profit = 0
-        for item in contents:
-            self.weight +=  item.weight
-            self.profit +=  item.profit
-        
-    def getSackWeight():
-        return(self._weight)
-    
-    def getSackProfit():
-        return(self._profit)
-
-class SackItem:
-    def __init__(name, weight, profit):
-        self._name = name
-        self._weight = weight
-        self._profit = profit
-
-    def getName():
-        return(self._name)
-    
-    def getItemWeight():
-        return(self._weight)
-    
-    def getItemProfit():
-        return(self._profit)
-    
-    def displayItem(self):
-        print(f"Item name: {self._name}, weight: {self._weight}, profit: {self._profit}")
     
 if __name__ == "__main__":
     main()
