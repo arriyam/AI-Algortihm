@@ -41,11 +41,12 @@ def main():
     generation = generateParents(batch,n)
     fitnessScores = fitnessGeneration(generation, weights, profits, maxWeight)
 
-    newGeneration = selectionAndCrossover(generation, fitnessScores, n)
+    print("Generation:", generation)
+    size = 0.4
+    gene1, gene2 = tournamentSelection(generation, fitnessScores, size)
 
-    print("Initial Generation:", generation)
+    print(gene1,gene2)
 
-    print("New Generation:", newGeneration)
     
      
 
@@ -82,48 +83,63 @@ def fitnessGeneration(generation, weights, profits, maxWeight):
         fitnessScores.append(fitnessScore)
     return fitnessScores
 
-def selectionAndCrossover(generation, fitnessScores, n):
-    #for n iterations, run tournament with x random parents, use 2 tournament winners as parents, randomly split parent genes into child gene, mutate a bit
-    '''
-    n = 5
-    Highest 2 goes to the next generation
-    Remove the 2 lowests
-    first generation:  [c1,c2,c3,c4,c5] lowest to higest
 
-    second generation: [c23,c34,c45,c4,c5] not in order
-
-    first generation:  [c1,c2,c3,c4,c5, c6] lowest to higest
-
-    second generation: [c23,c34,c45,c56,c5, c6] not in order
-    
-    '''
-
-    paired_data = list(zip(fitnessScores, generation))
-    # Sorting the paired data by fitness scores in ascending order
-    sorted_data = sorted(paired_data)
-    paired_data.sort()
-    print(paired_data)
-    print(sorted_data)
-
+def selectTwoHigestParenst(generation, fitnessScores, n):
     newGeneration = []
+
     highestGeneIndex, SecondHighestGeneIndex = findTwoHighestIndices(fitnessScores,n)
     newGeneration.extend([generation[highestGeneIndex], generation[SecondHighestGeneIndex]])
+    return newGeneration
+
+def tournamentSelection(generation, fitnessScores, size):
+    tournamentSize = int(len(fitnessScores) * size)
+    print(tournamentSize)
+    parents = []
+    iterations = 2
+    while iterations > 0:
+        tournamentMembers = []
+        for _ in range(tournamentSize):
+            member = random.randint(0,len(fitnessScores)-1)
+            tournamentMembers.append(member) #tournamentMembers = array of indices
+        print(f"TOURNAMENT MEMBER INDICES: {tournamentMembers}")
+        highScore = 0
+        remove = -1
+        for i in tournamentMembers:
+            print(f"MEMBER {i}: {generation[i]}, {fitnessScores[i]}")
+            if fitnessScores[i] >= highScore:
+                remove = i
+                highScore = fitnessScores[i]
+        print(f"TOURNAMENT WINNER INDEX: {remove}")
+        parents.append(generation[remove])
+        del generation[remove]
+        del fitnessScores[remove]
+        iterations -= 1
+        
+    return parents[0], parents[1]
+        
+    
+    
+
+def crossover(gene1, gene2, n):
+    spliceIndex = random.randint(2,n-2)
+    bool = random.choice([True, False])
+    newChild = []
+    if bool:
+        newChild = gene1[:spliceIndex] + gene2[spliceIndex:]
+    else:
+        newChild = gene2[:spliceIndex] + gene1[spliceIndex:]
+    return newChild
+
+def crossOverGeneration(generation, fitnessScores, n):
+    newGeneration = selectTwoHigestParenst(generation, fitnessScores, n)
+    size = 0
     for i in range(n-2):
         a = i + 1
-        c1, c2 = generation[i], generation[a]
-        spliceIndex = random.randint(2,n-2)
-        bool = random.choice([True, False])
-        newChild = []
-        if bool:
-            newChild = c2[:spliceIndex] + c1[spliceIndex:]
-        else:
-            newChild = c1[:spliceIndex] + c2[spliceIndex:]
-        newGeneration.append(newChild)
-
-    return newGeneration
+        gene1, gene2 = tournamentSelection(generation, fitnessScores, size)
         
 
-       
+
+
 def findTwoHighestIndices(fitnessScores,n):
     index1, index2 = (0, 1) if fitnessScores[0] > fitnessScores[1] else (1, 0)
     
@@ -141,3 +157,49 @@ def findTwoHighestIndices(fitnessScores,n):
 
 if __name__ == "__main__":
     main()
+
+
+'''
+    newGeneration = []
+    newGeneration.extend(newGenerationUnComplete)
+    for i in range(n-2):
+        a = i + 1
+        c1, c2 = generation[i], generation[a] #c1, c2 = tournamentSelection(generation)
+        spliceIndex = random.randint(2,n-2)
+        bool = random.choice([True, False])
+        newChild = []
+        if bool:
+            newChild = c2[:spliceIndex] + c1[spliceIndex:]
+        else:
+            newChild = c1[:spliceIndex] + c2[spliceIndex:]
+        newGeneration.append(newChild)
+
+    return newGeneration
+    
+
+    
+    n = 5
+    Highest 2 goes to the next generation
+    Remove the 2 lowests
+    first generation:  [c1,c2,c3,c4,c5] lowest to higest
+
+    ^^^
+    1. size = 0.60*len(arr) (0.60*5) = 3
+    2. randomly generate 3 indices i,j,k between 0 and len(arr)
+    3. save parent (e.g., generation[i]) whose fitness score is highest, remove from generation array
+    4. repeat 1, 2, and 3
+    5. return 2 parents
+
+
+    second generation: [c23,c34,c45,c4,c5] not in order
+
+    first generation:  [c1,c2,c3,c4,c5, c6] lowest to higest
+
+    second generation: [c23,c34,c45,c56,c5, c6] not in order
+
+'''
+
+
+        
+
+       
