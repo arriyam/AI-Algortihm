@@ -37,9 +37,9 @@ def main():
     # binArr = [0,0,1,0,1] #random example
     # answer would be items [ laptop, gold, spoon ] [0,1,0,1,1]
 
-    batch = 5 # Should be above equal to 5
+    batch = 20 # Should be above equal to 5
     size = 0.4 # The percentage value of the amount genes that will be selected in tournment selection
-    generationsNumber = 50 # number of generations to be developed
+    generationsNumber = 100 # number of generations to be developed
     
     generation = generateParents(batch, n)
     for generationNumber in range(generationsNumber):
