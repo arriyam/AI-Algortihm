@@ -39,7 +39,7 @@ def main():
 
     batch = 5 # Should be above equal to 5
     size = 0.4 # The percentage value of the amount genes that will be selected in tournment selection
-    generationsNumber = 10 # number of generations to be developed
+    generationsNumber = 50 # number of generations to be developed
     
     generation = generateParents(batch, n)
     for generationNumber in range(generationsNumber):
@@ -51,12 +51,14 @@ def main():
 
     bestGene = bestGeneInGeneration(generation, weights, profits, maxWeight)
     profit = fitness(bestGene, weights, profits, maxWeight)
+    namesSelected = itemsSelectedInGene(bestGene, names)
     print("Summary:")
     print(generationsNumber, " generations have been completed")
     print("This is the last Generation: ", newGeneration)
     print("BestGene: ",bestGene)
     print("Profit: ", profit )
-    printItemsSelectedInGene(bestGene, names)
+    print("List of items that are selected:", namesSelected)
+
 
 #randomly generate first generation (parents)
 def generateParents(batch,n):
@@ -99,11 +101,12 @@ def bestGeneInGeneration(generation, weights, profits, maxWeight):
             bestProfit = geneProfit   
     return bestGene
         
-def printItemsSelectedInGene(bestGene, names):
-    print("List of items that are selected:")
+def itemsSelectedInGene(bestGene, names):
+    namesSelected = []
     for i in range(len(bestGene)):
         if bestGene[i] == 1:
-            print(names[i])
+            namesSelected.append(names[i])
+    return namesSelected
 
 # Helper Function that won't be called in main
 def fitness(gene, weights, profits, maxWeight):
