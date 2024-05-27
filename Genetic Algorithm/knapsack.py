@@ -35,26 +35,28 @@ def main():
     profits = [10, 40, 30, 50, 35]
     weights = [5, 4, 6, 3, 2]
     # binArr = [0,0,1,0,1] #random example
-    # answer would be items [ laptop, gold, spoon ]
+    # answer would be items [ laptop, gold, spoon ] [0,1,0,1,1]
 
     batch = 5 # Should be above equal to 5
     size = 0.4 # The percentage value of the amount genes that will be selected in tournment selection
-    generations = 2 # number of generations to be developed
-    
+    generationsNumber = 10 # number of generations to be developed
     
     generation = generateParents(batch, n)
-    for generationNumber in range(generations):
-        print(f"GENERATION: {generationNumber}") 
-        print(f"GENERATION Index: {generation}")   
+    for generationNumber in range(generationsNumber):
+        # print(f"GENERATION: {generationNumber}") 
+        # print(f"GENERATIONS Array: {generation}")   
         fitnessScores = fitnessGeneration(generation, weights, profits, maxWeight)
         newGeneration = crossOverGeneration(generation, fitnessScores, size, n)
         generation = newGeneration
 
-    print(generations, " generations have been completed")
-    print("This is the last Generation' ", newGeneration)
     bestGene = bestGeneInGeneration(generation, weights, profits, maxWeight)
-    print("BestGene:",bestGene)
-
+    profit = fitness(bestGene, weights, profits, maxWeight)
+    print("Summary:")
+    print(generationsNumber, " generations have been completed")
+    print("This is the last Generation: ", newGeneration)
+    print("BestGene: ",bestGene)
+    print("Profit: ", profit )
+    printItemsSelectedInGene(bestGene, names)
 
 #randomly generate first generation (parents)
 def generateParents(batch,n):
@@ -76,12 +78,13 @@ def fitnessGeneration(generation, weights, profits, maxWeight):
         
 def crossOverGeneration(generation, fitnessScores, size, n):
     newGeneration = selectTwoHigestParents(generation, fitnessScores, n)
-    for i in range(n-2):
-        a = i + 1
+    for _ in range(n-2):
+        # print("ben before",generation)
         gene1, gene2 = tournamentSelection(generation, fitnessScores, size)
-        newChild = crossover(gene1, gene2, n)
-        newGeneration.append(newChild)
-    print(f"NEW GENERATION: {newGeneration}")
+        # print("ben after",generation)
+        newGene = crossover(gene1, gene2, n)
+        newGeneration.append(newGene)
+    # print(f"NEW GENERATION: {newGeneration}")
     return newGeneration
 
 def bestGeneInGeneration(generation, weights, profits, maxWeight):
@@ -96,11 +99,13 @@ def bestGeneInGeneration(generation, weights, profits, maxWeight):
             bestProfit = geneProfit   
     return bestGene
         
-
+def printItemsSelectedInGene(bestGene, names):
+    print("List of items that are selected:")
+    for i in range(len(bestGene)):
+        if bestGene[i] == 1:
+            print(names[i])
 
 # Helper Function that won't be called in main
-
-#return the fitness score for a gene (parent or child)
 def fitness(gene, weights, profits, maxWeight):
     geneWeight = 0
     geneProfit = 0
@@ -141,10 +146,12 @@ def crossover(gene1, gene2, n):
         newChild = gene1[:spliceIndex] + gene2[spliceIndex:]
     else:
         newChild = gene2[:spliceIndex] + gene1[spliceIndex:]
-    print(f"NEW CHILD: {newChild}")
+    # print(f"NEW CHILD: {newChild}")
     return newChild
 
 def tournamentSelection(generation, fitnessScores, size):
+    modifiableGeneration = generation[:]
+    modifiableFitnessScores = fitnessScores[:]
     tournamentSize = int(len(fitnessScores) * size)
     # print(tournamentSize)
     parents = []
@@ -152,7 +159,7 @@ def tournamentSelection(generation, fitnessScores, size):
     while iterations > 0:
         tournamentMembers = set()
         while len(tournamentMembers) < tournamentSize:
-            member = random.randint(0,len(fitnessScores)-1)
+            member = random.randint(0,len(modifiableFitnessScores)-1)
             if member not in tournamentMembers:
                 tournamentMembers.add(member) #tournamentMembers = array of indices
                 
@@ -161,13 +168,13 @@ def tournamentSelection(generation, fitnessScores, size):
         remove = -1
         for i in tournamentMembers:
             # print(f"MEMBER {i}: {generation[i]}, {fitnessScores[i]}")
-            if fitnessScores[i] >= highScore:
+            if modifiableFitnessScores[i] >= highScore:
                 remove = i
-                highScore = fitnessScores[i]
+                highScore = modifiableFitnessScores[i]
         # print(f"TOURNAMENT WINNER: {remove}")
-        parents.append(generation[remove])
-        del generation[remove]
-        del fitnessScores[remove]
+        parents.append(modifiableGeneration[remove])
+        del modifiableGeneration[remove]
+        del modifiableFitnessScores[remove]
         iterations -= 1
         
     # print("torumnet done")
