@@ -32,11 +32,24 @@ LOOK INTO TOURNAMENT SELECTION; SEEMS TO BE PICKING THE SAME THING!!!!!! We look
 BestGene:  [0, 1, 0, 1, 1]
 Profit:  125
 List of items that are selected: ['laptop', 'gold', 'spoon']
+
+here's what the second generation should have:
+highest parents:
+10011
+10011
+via tournament selection, here are the winners of the 8 tournaments:
+10011
+
+
+--------------------------------------
+IMPORTANT
+why is the first element in generation a fitness score of 0. That does not make sense becuase the first 2 genes in generation should only get higher and higher. The mutation function can't change it either
+
 '''
 import random
 
 def main():
-    n = 5 #total possible items
+    n = 5 #total possible items in a single gene
     maxWeight = 10 #max weight
     names = ["pen", "laptop", "hen", "gold", "spoon"]
     profits = [10, 40, 30, 50, 35]
@@ -44,17 +57,22 @@ def main():
     # binArr = [0,0,1,0,1] #random example
     # answer would be items [ laptop, gold, spoon ] [0,1,0,1,1]
 
-    batch = 10 # Should be above equal to 5
+    batch = 10 # number of genes in a generation
     size = 0.4 # The percentage value of the amount genes that will be selected in tournment selection
-    generationsNumber = 25 # number of generations to be developed
+    generationsNumber = 100 # number of generations to be developed
+    proabilityOfMutation = 0.3
     
     generation = generateParents(batch, n)
     for generationNumber in range(generationsNumber):
-        print(generationNumber)
-        # print(f"GENERATION: {generationNumber}") 
+
+        print(f"GENERATION: {generationNumber}") 
+        print()
+        print()
+        print()
         # print(f"GENERATIONS Array: {generation}")   
         fitnessScores = fitnessGeneration(generation, weights, profits, maxWeight)
         newGeneration = crossOverGeneration(generation, fitnessScores, size, n, batch)
+        newGeneration = mutateGeneration(generation, n, batch, proabilityOfMutation)
         generation = newGeneration
 
     bestGene = bestGeneInGeneration(generation, weights, profits, maxWeight)
@@ -66,6 +84,20 @@ def main():
     print("BestGene: ",bestGene)
     print("Profit: ", profit )
     print("List of items that are selected:", namesSelected)
+
+
+
+def mutateGeneration(generation, n, batch, proabilityOfMutation):
+    for i in range(2,batch-1):
+        gene = generation[i]
+        bool = random.random() < proabilityOfMutation
+        if bool:
+            randomIndex = random.randint(0, n-1)
+            if gene[randomIndex] == 1:
+                gene[randomIndex] = 0
+            else:
+                gene[randomIndex] = 1
+    return generation
 
 
 #randomly generate first generation (parents)
@@ -90,21 +122,29 @@ def crossOverGeneration(generation, fitnessScores, size, n, batch):
     profits = [10, 40, 30, 50, 35]
     weights = [5, 4, 6, 3, 2]
     maxWeight = 10
-    print("-"*100)
-    print("Generation Begin",generation)
-    print("Generation Begin Fitness Score", fitnessGeneration(generation, weights, profits, maxWeight))
-    print()
+    #print("-"*100)
+    #print("Generation Begin",generation)
+    #print("Generation Begin Fitness Score", fitnessGeneration(generation, weights, profits, maxWeight))
+    #print()
     newGeneration = selectTwoHigestParents(generation, fitnessScores, batch)
-    print("newGeneration Begin", newGeneration)
-    print("newGeneration Begin Fitness Score", fitnessGeneration(newGeneration, weights, profits, maxWeight))
+    print("HIGHEST SCORE PARENTS IN NEW GENERATION",newGeneration)
+    #print("newGeneration Begin", newGeneration)
+    #print("newGeneration Begin Fitness Score", fitnessGeneration(newGeneration, weights, profits, maxWeight))
     # print("newGeneration Begin Fitness Score", fitnessGeneration(newGeneration, weights, profits,maxWeight))
     for _ in range(batch-2):
-        # print("ben before",generation)
+        print("-"*100)
+        print("gen before",generation)
+        
         gene1, gene2 = tournamentSelection(generation, fitnessScores, size)
-        print("gene1, gene2", gene1, gene2)
+        print("highest score genes", gene1, gene2)
+        
+        print("generation", generation)
+        print("fitness scores", fitnessScores)
         print("Fitness gene1, gene2", fitness(gene1, weights, profits, maxWeight), fitness(gene2, weights, profits, maxWeight))
         # print("ben after",generation)
         newGene = crossover(gene1, gene2, n)
+    
+
         newGeneration.append(newGene)
     # print(f"NEW GENERATION: {newGeneration}")
     return newGeneration
@@ -162,7 +202,8 @@ def selectTwoHigestParents(generation, fitnessScores, n):
     return newGeneration
 
 def crossover(gene1, gene2, n):
-    spliceIndex = random.randint(2,n-2)
+    
+    spliceIndex = random.randint(0,n)
     bool = random.choice([True, False])
     newChild = []
     if bool:
@@ -171,6 +212,7 @@ def crossover(gene1, gene2, n):
         newChild = gene2[:spliceIndex] + gene1[spliceIndex:]
     # print(f"NEW CHILD: {newChild}")
     return newChild
+
 
 def tournamentSelection(generation, fitnessScores, size):
     modifiableGeneration = generation[:]
@@ -230,9 +272,12 @@ if __name__ == "__main__":
 
     second generation: [c23,c34,c45,c56,c5, c6] not in order
 
+
+
+
 '''
 
 
         
 
-       
+    
